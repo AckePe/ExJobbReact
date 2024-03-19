@@ -4,18 +4,26 @@ import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 
 function App() {
-  return <div className="container">{/* <Header /> */}</div>;
+  return (
+    <div className="container">
+      <Header />
+      <Logo />
+    </div>
+  );
 }
 
-// function Header() {
-//   const style = {};
+function Header() {
+  const style = {};
+  return (
+    <header className="header">
+      <h1 style={style}>React.js</h1>
+    </header>
+  );
+}
 
-//   return (
-//     <header className="header">
-//       <h1 style={style}>React.js</h1>
-//     </header>
-//   );
-// }
+function Logo() {
+  return <img src="/logo192.png" alt="Logo"></img>;
+}
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

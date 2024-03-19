@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #d6f5ff;
 }
 
 code {
@@ -28,7 +29,7 @@ code {
 
 .header h1 {
   /* Non-accessible color */
-  color: #edc84b;
+  color: #61dbfb;
   /* color: #af8602; */
 
   text-transform: uppercase;
@@ -47,7 +48,7 @@ code {
   content: "";
   height: 3px;
   width: 4rem;
-  background-color: #edc84b;
+  background-color: #61dbfb;
   position: absolute;
   top: calc(50% - 1px);
 }
