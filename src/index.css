@@ -60,3 +60,8 @@ code {
 .header h1::after {
   right: 0;
 }
+
+.footer {
+  font-size: 1.4rem;
+  color: #61dbfb;
+}

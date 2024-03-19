@@ -8,6 +8,7 @@ function App() {
     <div className="container">
       <Header />
       <Logo />
+      <Footer />
     </div>
   );
 }
@@ -23,6 +24,14 @@ function Header() {
 
 function Logo() {
   return <img src="/logo192.png" alt="Logo"></img>;
+}
+
+function Footer() {
+  return (
+    <footer className="footer">
+      <p>This is a sample text</p>
+    </footer>
+  );
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
