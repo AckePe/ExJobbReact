@@ -3,6 +3,39 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 
+const sampleData = [
+  {
+    productName: "Test1",
+    description: "This is a test sample",
+    price: 100,
+    photoName: "",
+  },
+  {
+    productName: "Test2",
+    description: "This is a test sample",
+    price: 100,
+    photoName: "",
+  },
+  {
+    productName: "Test3",
+    description: "This is a test sample",
+    price: 100,
+    photoName: "",
+  },
+  {
+    productName: "Test4",
+    description: "This is a test sample",
+    price: 100,
+    photoName: "",
+  },
+  {
+    productName: "Test5",
+    description: "This is a test sample",
+    price: 100,
+    photoName: "",
+  },
+];
+
 function App() {
   const [homeVisible, setHomeVisible] = useState(true);
   return (
@@ -11,8 +44,7 @@ function App() {
       <Logo />
       homeVisible ? (
       <Button />) : (
-      <Search />
-      )
+      <SearchContent />)
       <Footer />
     </div>
   );
@@ -44,7 +76,33 @@ function Button() {
   );
 }
 
-function Search() {}
+function SearchContent() {
+  const content = sampleData;
+  const numSample = content.length;
+
+  return (
+    <div className="searchContent">
+      <h2>Search</h2>
+
+      {numSample > 0 ? (
+        <>
+          <p>Here you can search</p>
+
+          <ul className="samples">
+            {content.map((sample) => (
+              <Sample sampleObject={sample} key={sample.name} />
+            ))}
+          </ul>
+        </>
+      ) : (
+        <p>There is no data!</p>
+      )}
+    </div>
+  );
+}
+
+//Construct for how a sample is built on the webapp
+function Sample({ sampleObject }) {}
 
 function Footer() {
   return (
