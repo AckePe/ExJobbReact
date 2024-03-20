@@ -1,13 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 
 function App() {
+  const [homeVisible, setHomeVisible] = useState(true);
   return (
     <div className="container">
       <Header />
       <Logo />
+      homeVisible ? (
+      <Button />) : (
+      <Search />
+      )
       <Footer />
     </div>
   );
@@ -15,6 +20,7 @@ function App() {
 
 function Header() {
   const style = {};
+
   return (
     <header className="header">
       <h1 style={style}>React.js</h1>
@@ -23,8 +29,22 @@ function Header() {
 }
 
 function Logo() {
-  return <img src="/logo192.png" alt="Logo"></img>;
+  return (
+    <div>
+      <img src="/logo192.png" alt="Logo"></img>
+    </div>
+  );
 }
+
+function Button() {
+  return (
+    <div>
+      <button className="btn">To search!</button>
+    </div>
+  );
+}
+
+function Search() {}
 
 function Footer() {
   return (
