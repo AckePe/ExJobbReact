@@ -37,14 +37,21 @@ const sampleData = [
 ];
 
 function App() {
-  const [homeVisible, setHomeVisible] = useState(true);
+  const [showContent, setShowContent] = useState(false);
+
+  const toggleContent = () => {
+    setShowContent((prevShowContent) => !prevShowContent);
+  };
+
   return (
     <div className="container">
       <Header />
       <Logo />
-      homeVisible ? (
-      <Button />) : (
-      <SearchContent />)
+      <Button
+        onClick={toggleContent}
+        buttonText={showContent ? "Home" : "Search"}
+      />
+      {showContent ? <SearchContent /> : null}
       <Footer />
     </div>
   );
@@ -68,26 +75,29 @@ function Logo() {
   );
 }
 
-function Button() {
+function Button({ onClick, buttonText }) {
   return (
     <div>
-      <button className="btn">To search!</button>
+      <button className="btn" onClick={onClick}>
+        {buttonText}
+      </button>
     </div>
   );
 }
 
-function SearchContent() {
+function SearchContent(onClick) {
   const content = sampleData;
   const numSample = content.length;
 
   return (
     <div className="searchContent">
+      {/* <button className="btn" onClick={onClick}>
+        Home
+      </button> */}
       <h2>Search</h2>
 
       {numSample > 0 ? (
         <>
-          <p>Here you can search</p>
-
           <ul className="samples">
             {content.map((sample) => (
               <Sample sampleObject={sample} key={sample.name} />
@@ -102,7 +112,15 @@ function SearchContent() {
 }
 
 //Construct for how a sample is built on the webapp
-function Sample({ sampleObject }) {}
+function Sample({ sampleObject }) {
+  return (
+    <li>
+      <div>
+        <h3>{sampleObject.productName}</h3>
+      </div>
+    </li>
+  );
+}
 
 function Footer() {
   return (
