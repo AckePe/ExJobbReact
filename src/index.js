@@ -2,39 +2,40 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
+import dataset from "./dataSet.json";
 
-const sampleData = [
-  {
-    productName: "Test1",
-    description: "This is a test sample",
-    price: 100,
-    photoName: "",
-  },
-  {
-    productName: "Test2",
-    description: "This is a test sample",
-    price: 100,
-    photoName: "",
-  },
-  {
-    productName: "Test3",
-    description: "This is a test sample",
-    price: 100,
-    photoName: "",
-  },
-  {
-    productName: "Test4",
-    description: "This is a test sample",
-    price: 100,
-    photoName: "",
-  },
-  {
-    productName: "Test5",
-    description: "This is a test sample",
-    price: 100,
-    photoName: "",
-  },
-];
+// const sampleData = [
+//   {
+//     productName: "Test1",
+//     description: "This is a test sample",
+//     price: 100,
+//     photoName: "",
+//   },
+//   {
+//     productName: "Test2",
+//     description: "This is a test sample",
+//     price: 100,
+//     photoName: "",
+//   },
+//   {
+//     productName: "Test3",
+//     description: "This is a test sample",
+//     price: 100,
+//     photoName: "",
+//   },
+//   {
+//     productName: "Test4",
+//     description: "This is a test sample",
+//     price: 100,
+//     photoName: "",
+//   },
+//   {
+//     productName: "Test5",
+//     description: "This is a test sample",
+//     price: 100,
+//     photoName: "",
+//   },
+// ];
 
 function App() {
   const [showContent, setShowContent] = useState(false);
@@ -86,7 +87,7 @@ function Button({ onClick, buttonText }) {
 }
 
 function SearchContent(onClick) {
-  const content = sampleData;
+  const content = dataset;
   const numSample = content.length;
 
   return (
@@ -99,8 +100,8 @@ function SearchContent(onClick) {
       {numSample > 0 ? (
         <>
           <ul className="samples">
-            {content.map((sample) => (
-              <Sample sampleObject={sample} key={sample.name} />
+            {content.map((dataset) => (
+              <Sample dataset={dataset} key={dataset.invoice} />
             ))}
           </ul>
         </>
@@ -112,11 +113,13 @@ function SearchContent(onClick) {
 }
 
 //Construct for how a sample is built on the webapp
-function Sample({ sampleObject }) {
+function Sample({ dataset }) {
   return (
-    <li>
+    <li className="objects">
       <div>
-        <h3>{sampleObject.productName}</h3>
+        <h3>{dataset.description}</h3>
+        <p>{dataset.quantity}</p>
+        <span>{dataset.price}</span>
       </div>
     </li>
   );
