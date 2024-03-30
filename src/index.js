@@ -52,7 +52,7 @@ function App() {
         onClick={toggleContent}
         buttonText={showContent ? "Home" : "Search"}
       />
-      {showContent ? <SearchContent /> : null}
+      {showContent ? <SearchContent content={dataset} /> : null}
       <Footer />
     </div>
   );
@@ -86,33 +86,43 @@ function Button({ onClick, buttonText }) {
   );
 }
 
-function SearchContent(onClick) {
-  const content = dataset;
-  const numSample = content.length;
+function SearchContent({ content }) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+
+  const handleSearch = () => {
+    const filteredContent = content.filter((data) =>
+      data.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setSearchResult(filteredContent.slice(0, 100)); // Limit results to 100
+  };
 
   return (
     <div className="searchContent">
-      {/* <button className="btn" onClick={onClick}>
-        Home
-      </button> */}
       <h2>Search</h2>
-
-      {numSample > 0 ? (
+      <input
+        type="text"
+        placeholder="Search..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      <button onClick={handleSearch}>Search</button>
+      {searchResult.length > 0 ? (
         <>
           <ul className="samples">
-            {content.map((dataset) => (
-              <Sample dataset={dataset} key={dataset.invoice} />
+            {searchResult.map((data) => (
+              <Sample dataset={data} key={data.invoice} />
             ))}
           </ul>
         </>
       ) : (
-        <p>There is no data!</p>
+        <p>No data matching the search term!</p>
       )}
     </div>
   );
 }
 
-//Construct for how a sample is built on the webapp
+// Construct for how a sample is built on the webapp
 function Sample({ dataset }) {
   return (
     <li className="objects">
