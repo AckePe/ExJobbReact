@@ -99,26 +99,39 @@ function SearchContent({ content }) {
 
   return (
     <div className="searchContent">
-      <h2>Search</h2>
+      <NavBar
+        handleSearch={handleSearch}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
+      <div className="content">
+        {searchResult.length > 0 ? (
+          <ul className="samples">
+            {searchResult.map((data) => (
+              <Sample dataset={data} key={data.invoice} />
+            ))}
+          </ul>
+        ) : (
+          <p>No data matching the search term!</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function NavBar({ handleSearch, searchTerm, setSearchTerm }) {
+  return (
+    <nav className="navbar">
       <input
         type="text"
         placeholder="Search..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
-      <button onClick={handleSearch}>Search</button>
-      {searchResult.length > 0 ? (
-        <>
-          <ul className="samples">
-            {searchResult.map((data) => (
-              <Sample dataset={data} key={data.invoice} />
-            ))}
-          </ul>
-        </>
-      ) : (
-        <p>No data matching the search term!</p>
-      )}
-    </div>
+      <button className="btn" onClick={handleSearch}>
+        Search
+      </button>
+    </nav>
   );
 }
 
