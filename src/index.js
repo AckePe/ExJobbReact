@@ -89,12 +89,19 @@ function Button({ onClick, buttonText }) {
 function SearchContent({ content }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResult, setSearchResult] = useState([]);
+  const [loadTime, setLoadTime] = useState(0);
 
   const handleSearch = () => {
+    const startTime = performance.now(); // Record start time
+
     const filteredContent = content.filter((data) =>
       data.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
     setSearchResult(filteredContent.slice(0, 100)); // Limit results to 100
+
+    const endTime = performance.now(); // Record end time
+    setLoadTime(endTime - startTime); // Calculate and set load time
   };
 
   return (
@@ -115,6 +122,8 @@ function SearchContent({ content }) {
           <p>No data matching the search term!</p>
         )}
       </div>
+      {loadTime > 0 && <p>Load time: {loadTime.toFixed(2)} milliseconds</p>}{" "}
+      {/* Display load time */}
     </div>
   );
 }
