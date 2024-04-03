@@ -98,10 +98,41 @@ function SearchContent({ content }) {
       data.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const endTime = performance.now(); // Record end time
+    const measuredLoadTime = endTime - startTime; // Calculate load time
+    setLoadTime(measuredLoadTime); // Set load time state
+
     setSearchResult(filteredContent.slice(0, 100)); // Limit results to 100
 
-    const endTime = performance.now(); // Record end time
-    setLoadTime(endTime - startTime); // Calculate and set load time
+    saveData({ searchTerm, loadTime: measuredLoadTime }); // Save data to JSON file
+  };
+
+  const saveData = (data) => {
+    // Retrieve existing data from localStorage
+    const existingData =
+      JSON.parse(localStorage.getItem("performanceData")) || [];
+    // Append new data to existing data
+    const newData = [...existingData, data];
+    // Store data in localStorage
+    localStorage.setItem("performanceData", JSON.stringify(newData));
+
+    // Create a Blob containing the JSON data
+    const blob = new Blob([JSON.stringify(newData, null, 2)], {
+      type: "application/json",
+    });
+    // Create a link element
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    // Set the filename for the downloaded file
+    link.download = "search_results.json";
+    // Append the link to the body
+    document.body.appendChild(link);
+    // Simulate a click to initiate download
+    link.click();
+    // Clean up
+    URL.revokeObjectURL(url);
+    document.body.removeChild(link);
   };
 
   return (
