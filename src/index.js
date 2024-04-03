@@ -138,11 +138,26 @@ function NavBar({ handleSearch, searchTerm, setSearchTerm }) {
 // Construct for how a sample is built on the webapp
 function Sample({ dataset }) {
   return (
-    <li className="objects">
-      <div>
-        <h3>{dataset.description}</h3>
-        <p>{dataset.quantity}</p>
-        <span>{dataset.price}</span>
+    <li className="card">
+      <div className="card-header">
+        <h3>Stock code: {dataset.stockcode}</h3>
+      </div>
+      <div className="card-content">
+        <p>
+          <strong>Description: {dataset.description}</strong>
+        </p>
+        <p>
+          <strong>Quantity: {dataset.quantity}</strong>
+        </p>
+        <p>
+          <strong>Price: {dataset.price}</strong>
+        </p>
+        <p>
+          <strong>Invoice date: {dataset.invoiceDate}</strong>
+        </p>
+        <p>
+          <strong>Country: {dataset.country}</strong>
+        </p>
       </div>
     </li>
   );

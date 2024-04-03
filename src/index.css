@@ -114,39 +114,29 @@ code {
   gap: 2rem;
 }
 
-.objects {
-  display: flex;
-  gap: 3.2rem;
+.card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.objects img {
-  width: 10rem;
-  aspect-ratio: 1;
-  align-self: start;
+.card-header {
+  background-color: #61dbfb;
+  border-bottom: 1px solid #ddd;
+  padding: 8px 0;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 8px 8px 0 0;
 }
 
-.objects div {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.4rem 0;
+.card-content {
+  padding: 10px;
 }
 
-.objects h3 {
-  font-size: 2rem;
-  font-weight: 400;
-}
-
-.objects p {
-  font-size: 1.4rem;
-  font-weight: 300;
-  font-style: italic;
-  margin-bottom: auto;
-}
-
-.objects span {
-  display: block;
-  font-size: 1.6rem;
+.card-content p {
+  margin: 5px 0;
 }
 
 .searchContent {
