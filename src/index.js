@@ -108,7 +108,7 @@ function SearchContent({ content }) {
         {searchResult.length > 0 ? (
           <ul className="samples">
             {searchResult.map((data) => (
-              <Sample dataset={data} key={data.invoice} />
+              <Sample dataset={data} key={data.stockcode} />
             ))}
           </ul>
         ) : (
@@ -128,7 +128,7 @@ function NavBar({ handleSearch, searchTerm, setSearchTerm }) {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
-      <button className="btn" onClick={handleSearch}>
+      <button className="navbar-btn" onClick={handleSearch}>
         Search
       </button>
     </nav>
