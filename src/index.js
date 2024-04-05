@@ -4,39 +4,6 @@ import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import dataset from "./dataSet.json";
 
-// const sampleData = [
-//   {
-//     productName: "Test1",
-//     description: "This is a test sample",
-//     price: 100,
-//     photoName: "",
-//   },
-//   {
-//     productName: "Test2",
-//     description: "This is a test sample",
-//     price: 100,
-//     photoName: "",
-//   },
-//   {
-//     productName: "Test3",
-//     description: "This is a test sample",
-//     price: 100,
-//     photoName: "",
-//   },
-//   {
-//     productName: "Test4",
-//     description: "This is a test sample",
-//     price: 100,
-//     photoName: "",
-//   },
-//   {
-//     productName: "Test5",
-//     description: "This is a test sample",
-//     price: 100,
-//     photoName: "",
-//   },
-// ];
-
 function App() {
   const [showContent, setShowContent] = useState(false);
 
@@ -58,6 +25,7 @@ function App() {
   );
 }
 
+//Header
 function Header() {
   const style = {};
 
@@ -68,6 +36,7 @@ function Header() {
   );
 }
 
+//React logo
 function Logo() {
   return (
     <div>
@@ -76,6 +45,7 @@ function Logo() {
   );
 }
 
+//Home/To search button
 function Button({ onClick, buttonText }) {
   return (
     <div>
@@ -86,6 +56,7 @@ function Button({ onClick, buttonText }) {
   );
 }
 
+//The search and performance handler
 function SearchContent({ content }) {
   const [searchResult, setSearchResult] = useState([]);
   const [totalLoadTime, setTotalLoadTime] = useState(0);
@@ -236,10 +207,15 @@ function Sample({ dataset }) {
   );
 }
 
+//Copyright license
 function Footer() {
   return (
     <footer className="footer">
-      <p>This is a sample text</p>
+      <p>
+        <a href="https://creativecommons.org/licenses/by/4.0/">
+          Attribution 4.0 International (CC BY 4.0)
+        </a>
+      </p>
     </footer>
   );
 }
