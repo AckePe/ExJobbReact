@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
@@ -87,79 +87,112 @@ function Button({ onClick, buttonText }) {
 }
 
 function SearchContent({ content }) {
-  const [searchTerm, setSearchTerm] = useState("");
   const [searchResult, setSearchResult] = useState([]);
-  const [loadTime, setLoadTime] = useState(0);
+  const [totalLoadTime, setTotalLoadTime] = useState(0);
+  const [searchTerm, setSearchTerm] = useState(""); // Define searchTerm state
+  const [searchData, setSearchData] = useState([]); // Define searchData state
 
-  const handleSearch = () => {
+  const handleSearch = (letter) => {
     const startTime = performance.now(); // Record start time
 
     const filteredContent = content.filter((data) =>
-      data.description.toLowerCase().includes(searchTerm.toLowerCase())
+      data.description.toLowerCase().includes(letter.toLowerCase())
     );
 
     const endTime = performance.now(); // Record end time
     const measuredLoadTime = endTime - startTime; // Calculate load time
-    setLoadTime(measuredLoadTime); // Set load time state
 
     setSearchResult(filteredContent.slice(0, 100)); // Limit results to 100
 
-    saveData({ searchTerm, loadTime: measuredLoadTime }); // Save data to JSON file
+    const searchItem = { searchTerm: letter, loadTime: measuredLoadTime };
+    setSearchData((prevData) => [...prevData, searchItem]); // Store search data
+
+    return measuredLoadTime; // Return load time
   };
 
-  const saveData = (data) => {
-    // Retrieve existing data from localStorage
-    const existingData =
-      JSON.parse(localStorage.getItem("performanceData")) || [];
-    // Append new data to existing data
-    const newData = [...existingData, data];
-    // Store data in localStorage
-    localStorage.setItem("performanceData", JSON.stringify(newData));
+  const runSearches = () => {
+    let totalLoadTime = 0; // Variable to store total load time
 
-    // Create a Blob containing the JSON data
-    const blob = new Blob([JSON.stringify(newData, null, 2)], {
-      type: "application/json",
-    });
-    // Create a link element
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    // Set the filename for the downloaded file
-    link.download = "search_results.json";
-    // Append the link to the body
-    document.body.appendChild(link);
-    // Simulate a click to initiate download
-    link.click();
-    // Clean up
-    URL.revokeObjectURL(url);
-    document.body.removeChild(link);
+    // Run searches until 1000 searches are made
+    for (let i = 0; i < 1000; i++) {
+      const searchTerm = generateRandomSearchTerm(); // Generate a random search term
+      totalLoadTime += handleSearch(searchTerm); // Add load time of current search to total
+    }
+
+    setTotalLoadTime(totalLoadTime); // Set total load time
   };
+
+  // Function to generate a random search term
+  const generateRandomSearchTerm = () => {
+    const alphabet = "abcdefghijklmnopqrstuvwxyz";
+    let searchTerm = "";
+
+    for (let i = 0; i < 5; i++) {
+      // Generate a search term of length 5
+      const randomLetterIndex = Math.floor(Math.random() * alphabet.length);
+      const randomLetter = alphabet[randomLetterIndex];
+      searchTerm += randomLetter;
+    }
+
+    return searchTerm;
+  };
+
+  const handleSearchButtonClick = () => {
+    setSearchData([]); // Clear previous search data
+    runSearches(); // Run 1000 searches
+  };
+
+  useEffect(() => {
+    const saveData = () => {
+      const blob = new Blob([JSON.stringify(searchData, null, 2)], {
+        type: "application/json",
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "search_results.json";
+      document.body.appendChild(link);
+      link.click();
+      URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    };
+
+    if (searchData.length > 0) {
+      saveData(); // Save data when searchData is updated
+    }
+  }, [searchData]);
 
   return (
     <div className="searchContent">
       <NavBar
-        handleSearch={handleSearch}
+        handleSearchButtonClick={handleSearchButtonClick}
         searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
+        setSearchTerm={setSearchTerm} // Pass setSearchTerm to NavBar
       />
       <div className="content">
         {searchResult.length > 0 ? (
           <ul className="samples">
-            {searchResult.map((data) => (
-              <Sample dataset={data} key={data.stockcode} />
+            {searchResult.map((data, index) => (
+              <Sample dataset={data} key={index} />
             ))}
           </ul>
         ) : (
           <p>No data matching the search term!</p>
         )}
       </div>
-      {loadTime > 0 && <p>Load time: {loadTime.toFixed(2)} milliseconds</p>}{" "}
-      {/* Display load time */}
+      {totalLoadTime > 0 && (
+        <p>
+          Total Load time for 1000 searches: {totalLoadTime.toFixed(2)}{" "}
+          milliseconds
+        </p>
+      )}
+      {/* Display total load time */}
     </div>
   );
 }
 
-function NavBar({ handleSearch, searchTerm, setSearchTerm }) {
+function NavBar({ handleSearchButtonClick, searchTerm, setSearchTerm }) {
   return (
     <nav className="navbar">
       <input
@@ -168,7 +201,7 @@ function NavBar({ handleSearch, searchTerm, setSearchTerm }) {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
-      <button className="navbar-btn" onClick={handleSearch}>
+      <button className="navbar-btn" onClick={handleSearchButtonClick}>
         Search
       </button>
     </nav>
