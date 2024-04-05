@@ -60,46 +60,50 @@ function Button({ onClick, buttonText }) {
 function SearchContent({ content }) {
   const [searchResult, setSearchResult] = useState([]);
   const [totalLoadTime, setTotalLoadTime] = useState(0);
-  const [searchTerm, setSearchTerm] = useState(""); // Define searchTerm state
-  const [searchData, setSearchData] = useState([]); // Define searchData state
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchData, setSearchData] = useState([]);
+  const [loading, setLoading] = useState(false); // State variable for loading
 
   const handleSearch = (letter) => {
     const startTime = performance.now(); // Record start time
+
+    setLoading(true); // Set loading to true when search starts
 
     const filteredContent = content.filter((data) =>
       data.description.toLowerCase().includes(letter.toLowerCase())
     );
 
     const endTime = performance.now(); // Record end time
-    const measuredLoadTime = endTime - startTime; // Calculate load time
+    const measuredLoadTime = endTime - startTime;
 
-    setSearchResult(filteredContent.slice(0, 100)); // Limit results to 100
+    setSearchResult(filteredContent.slice(0, 100));
 
     const searchItem = { searchTerm: letter, loadTime: measuredLoadTime };
-    setSearchData((prevData) => [...prevData, searchItem]); // Store search data
+    setSearchData((prevData) => [...prevData, searchItem]);
 
-    return measuredLoadTime; // Return load time
+    setLoading(false); // Set loading to false when search completes
+
+    return measuredLoadTime;
   };
 
   const runSearches = () => {
-    let totalLoadTime = 0; // Variable to store total load time
+    setLoading(true); // Set loading to true before starting searches
+    let totalLoadTime = 0;
 
-    // Run searches until 1000 searches are made
     for (let i = 0; i < 1000; i++) {
-      const searchTerm = generateRandomSearchTerm(); // Generate a random search term
-      totalLoadTime += handleSearch(searchTerm); // Add load time of current search to total
+      const searchTerm = generateRandomSearchTerm();
+      totalLoadTime += handleSearch(searchTerm);
     }
 
-    setTotalLoadTime(totalLoadTime); // Set total load time
+    setTotalLoadTime(totalLoadTime);
+    setLoading(false); // Set loading to false after completing searches
   };
 
-  // Function to generate a random search term
   const generateRandomSearchTerm = () => {
     const alphabet = "abcdefghijklmnopqrstuvwxyz";
     let searchTerm = "";
 
     for (let i = 0; i < 5; i++) {
-      // Generate a search term of length 5
       const randomLetterIndex = Math.floor(Math.random() * alphabet.length);
       const randomLetter = alphabet[randomLetterIndex];
       searchTerm += randomLetter;
@@ -109,8 +113,8 @@ function SearchContent({ content }) {
   };
 
   const handleSearchButtonClick = () => {
-    setSearchData([]); // Clear previous search data
-    runSearches(); // Run 1000 searches
+    setSearchData([]);
+    runSearches();
   };
 
   useEffect(() => {
@@ -130,7 +134,7 @@ function SearchContent({ content }) {
     };
 
     if (searchData.length > 0) {
-      saveData(); // Save data when searchData is updated
+      saveData();
     }
   }, [searchData]);
 
@@ -139,10 +143,12 @@ function SearchContent({ content }) {
       <NavBar
         handleSearchButtonClick={handleSearchButtonClick}
         searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm} // Pass setSearchTerm to NavBar
+        setSearchTerm={setSearchTerm}
       />
       <div className="content">
-        {searchResult.length > 0 ? (
+        {loading ? (
+          <p>Loading...</p>
+        ) : searchResult.length > 0 ? (
           <ul className="samples">
             {searchResult.map((data, index) => (
               <Sample dataset={data} key={index} />
@@ -158,7 +164,6 @@ function SearchContent({ content }) {
           milliseconds
         </p>
       )}
-      {/* Display total load time */}
     </div>
   );
 }
