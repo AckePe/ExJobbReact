@@ -210,5 +210,6 @@ code {
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  width: 150px;
+  width: 175px;
+  margin-right: 5px;
 }

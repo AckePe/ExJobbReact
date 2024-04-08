@@ -63,6 +63,7 @@ function SearchContent({ content }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchData, setSearchData] = useState([]);
   const [loading, setLoading] = useState(false); // State variable for loading
+  const [isMeasureClicked, setIsMeasureClicked] = useState(false); // State variable for measure click
 
   const handleSearch = (letter) => {
     const startTime = performance.now(); // Record start time
@@ -88,6 +89,8 @@ function SearchContent({ content }) {
 
   const runSearches = () => {
     setLoading(true); // Set loading to true before starting searches
+    setIsMeasureClicked(true); // Set measure clicked flag
+
     let totalLoadTime = 0;
 
     for (let i = 0; i < 1000; i++) {
@@ -117,31 +120,37 @@ function SearchContent({ content }) {
     runSearches();
   };
 
+  const handleSingleSearchClick = () => {
+    handleSearch(searchTerm); // Perform the search with the current value of the search term
+  };
+
   useEffect(() => {
     const saveData = () => {
-      const blob = new Blob([JSON.stringify(searchData, null, 2)], {
-        type: "application/json",
-      });
+      if (isMeasureClicked && searchData.length > 0) {
+        // Check if Measure button is clicked and search data is available
+        const blob = new Blob([JSON.stringify(searchData, null, 2)], {
+          type: "application/json",
+        });
 
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "search_results.json";
-      document.body.appendChild(link);
-      link.click();
-      URL.revokeObjectURL(url);
-      document.body.removeChild(link);
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "search_results.json";
+        document.body.appendChild(link);
+        link.click();
+        URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+      }
     };
 
-    if (searchData.length > 0) {
-      saveData();
-    }
-  }, [searchData]);
+    saveData(); // Call saveData directly
+  }, [searchData, isMeasureClicked]); // Dependency array includes isMeasureClicked
 
   return (
     <div className="searchContent">
       <NavBar
         handleSearchButtonClick={handleSearchButtonClick}
+        handleSingleSearchClick={handleSingleSearchClick} // Pass the handleSingleSearchClick function to the NavBar
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />
@@ -168,7 +177,12 @@ function SearchContent({ content }) {
   );
 }
 
-function NavBar({ handleSearchButtonClick, searchTerm, setSearchTerm }) {
+function NavBar({
+  handleSearchButtonClick,
+  handleSingleSearchClick,
+  searchTerm,
+  setSearchTerm,
+}) {
   return (
     <nav className="navbar">
       <input
@@ -177,8 +191,11 @@ function NavBar({ handleSearchButtonClick, searchTerm, setSearchTerm }) {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
-      <button className="navbar-btn" onClick={handleSearchButtonClick}>
+      <button className="navbar-btn" onClick={handleSingleSearchClick}>
         Search
+      </button>
+      <button className="navbar-btn" onClick={handleSearchButtonClick}>
+        Measure
       </button>
     </nav>
   );
@@ -220,6 +237,12 @@ function Footer() {
         <a href="https://creativecommons.org/licenses/by/4.0/">
           Attribution 4.0 International (CC BY 4.0)
         </a>
+        <p>
+          Dataset created by{" "}
+          <a href="https://www.kaggle.com/datasets/whenamancodes/online-retail-data-ii">
+            Aman Chauhan
+          </a>
+        </p>
       </p>
     </footer>
   );
