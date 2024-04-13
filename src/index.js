@@ -115,6 +115,7 @@ function SearchContent({ content }) {
     return searchTerm;
   };
 
+  //Performs the performance measure
   const handleSearchButtonClick = () => {
     setSearchData([]);
     runSearches();
