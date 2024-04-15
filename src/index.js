@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import dataset from "./dataSet.json";
+import seedrandom from "seedrandom";
 
 function App() {
   const [showContent, setShowContent] = useState(false);
@@ -25,7 +26,7 @@ function App() {
   );
 }
 
-//Header
+// Header
 function Header() {
   const style = {};
 
@@ -36,7 +37,7 @@ function Header() {
   );
 }
 
-//React logo
+// React logo
 function Logo() {
   return (
     <div>
@@ -45,7 +46,7 @@ function Logo() {
   );
 }
 
-//Home/To search button
+// Home/To search button
 function Button({ onClick, buttonText }) {
   return (
     <div>
@@ -56,25 +57,31 @@ function Button({ onClick, buttonText }) {
   );
 }
 
-//The search and performance handler
+// The search and performance handler
 function SearchContent({ content }) {
   const [searchResult, setSearchResult] = useState([]);
   const [totalLoadTime, setTotalLoadTime] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchData, setSearchData] = useState([]);
-  const [loading, setLoading] = useState(false); // State variable for loading
-  const [isMeasureClicked, setIsMeasureClicked] = useState(false); // State variable for measure click
+  const [loading, setLoading] = useState(false);
+  const [isMeasureClicked, setIsMeasureClicked] = useState(false);
+  const [seed, setSeed] = useState(""); // Initialize seed as empty string
+
+  useEffect(() => {
+    // Generate a seed when the component mounts
+    setSeed(new Date().getTime().toString());
+  }, []);
 
   const handleSearch = (letter) => {
-    const startTime = performance.now(); // Record start time
+    const startTime = performance.now();
 
-    setLoading(true); // Set loading to true when search starts
+    setLoading(true);
 
     const filteredContent = content.filter((data) =>
       data.description.toLowerCase().includes(letter.toLowerCase())
     );
 
-    const endTime = performance.now(); // Record end time
+    const endTime = performance.now();
     const measuredLoadTime = endTime - startTime;
 
     setSearchResult(filteredContent.slice(0, 100));
@@ -82,32 +89,35 @@ function SearchContent({ content }) {
     const searchItem = { searchTerm: letter, loadTime: measuredLoadTime };
     setSearchData((prevData) => [...prevData, searchItem]);
 
-    setLoading(false); // Set loading to false when search completes
+    setLoading(false);
 
     return measuredLoadTime;
   };
 
   const runSearches = () => {
-    setLoading(true); // Set loading to true before starting searches
-    setIsMeasureClicked(true); // Set measure clicked flag
+    setLoading(true);
+    setIsMeasureClicked(true);
 
     let totalLoadTime = 0;
 
+    // Use the same seed for all searches within a run
+    const rng = seedrandom(seed);
+
     for (let i = 0; i < 1000; i++) {
-      const searchTerm = generateRandomSearchTerm();
+      const searchTerm = generateRandomSearchTerm(rng);
       totalLoadTime += handleSearch(searchTerm);
     }
 
     setTotalLoadTime(totalLoadTime);
-    setLoading(false); // Set loading to false after completing searches
+    setLoading(false);
   };
 
-  const generateRandomSearchTerm = () => {
+  const generateRandomSearchTerm = (rng) => {
     const alphabet = "abcdefghijklmnopqrstuvwxyz";
     let searchTerm = "";
 
     for (let i = 0; i < 5; i++) {
-      const randomLetterIndex = Math.floor(Math.random() * alphabet.length);
+      const randomLetterIndex = Math.floor(rng() * alphabet.length);
       const randomLetter = alphabet[randomLetterIndex];
       searchTerm += randomLetter;
     }
@@ -115,20 +125,17 @@ function SearchContent({ content }) {
     return searchTerm;
   };
 
-  //Performs the performance measure
   const handleSearchButtonClick = () => {
-    setSearchData([]);
     runSearches();
   };
 
   const handleSingleSearchClick = () => {
-    handleSearch(searchTerm); // Perform the search with the current value of the search term
+    handleSearch(searchTerm);
   };
 
   useEffect(() => {
     const saveData = () => {
       if (isMeasureClicked && searchData.length > 0) {
-        // Check if Measure button is clicked and search data is available
         const blob = new Blob([JSON.stringify(searchData, null, 2)], {
           type: "application/json",
         });
@@ -144,14 +151,14 @@ function SearchContent({ content }) {
       }
     };
 
-    saveData(); // Call saveData directly
-  }, [searchData, isMeasureClicked]); // Dependency array includes isMeasureClicked
+    saveData();
+  }, [searchData, isMeasureClicked]);
 
   return (
     <div className="searchContent">
       <NavBar
         handleSearchButtonClick={handleSearchButtonClick}
-        handleSingleSearchClick={handleSingleSearchClick} // Pass the handleSingleSearchClick function to the NavBar
+        handleSingleSearchClick={handleSingleSearchClick}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />
@@ -202,7 +209,6 @@ function NavBar({
   );
 }
 
-// Construct for how a sample is built on the webapp
 function Sample({ dataset }) {
   return (
     <li className="card">
@@ -230,7 +236,6 @@ function Sample({ dataset }) {
   );
 }
 
-//Copyright license
 function Footer() {
   return (
     <footer className="footer">
@@ -256,7 +261,4 @@ root.render(
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
