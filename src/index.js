@@ -57,6 +57,11 @@ function Button({ onClick, buttonText }) {
   );
 }
 
+function dispatchAllRenderCompleteEvent() {
+  const allRenderCompleteEvent = new Event("allRenderComplete");
+  document.dispatchEvent(allRenderCompleteEvent);
+}
+
 // The search and performance handler
 function SearchContent({ content }) {
   const [searchResult, setSearchResult] = useState([]);
@@ -72,6 +77,10 @@ function SearchContent({ content }) {
     setSeed(new Date().getTime().toString());
   }, []);
 
+  useEffect(() => {
+    dispatchAllRenderCompleteEvent();
+  }, []);
+
   const handleSearch = (letter) => {
     const startTime = performance.now();
 
@@ -84,7 +93,7 @@ function SearchContent({ content }) {
     const endTime = performance.now();
     const measuredLoadTime = endTime - startTime;
 
-    setSearchResult(filteredContent.slice(0, 100));
+    setSearchResult(filteredContent);
 
     const searchItem = { searchTerm: letter, loadTime: measuredLoadTime };
     setSearchData((prevData) => [...prevData, searchItem]);
@@ -199,7 +208,11 @@ function NavBar({
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
-      <button className="navbar-btn" onClick={handleSingleSearchClick}>
+      <button
+        id="navbar-search"
+        className="navbar-btn"
+        onClick={handleSingleSearchClick}
+      >
         Search
       </button>
       <button className="navbar-btn" onClick={handleSearchButtonClick}>
@@ -243,12 +256,12 @@ function Footer() {
         <a href="https://creativecommons.org/licenses/by/4.0/">
           Attribution 4.0 International (CC BY 4.0)
         </a>
-        <p>
-          Dataset created by{" "}
-          <a href="https://www.kaggle.com/datasets/whenamancodes/online-retail-data-ii">
-            Aman Chauhan
-          </a>
-        </p>
+      </p>
+      <p>
+        Dataset created by{" "}
+        <a href="https://www.kaggle.com/datasets/whenamancodes/online-retail-data-ii">
+          Aman Chauhan
+        </a>
       </p>
     </footer>
   );
