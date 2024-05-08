@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Profiler } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
@@ -20,7 +20,11 @@ function App() {
         onClick={toggleContent}
         buttonText={showContent ? "Home" : "Search"}
       />
-      {showContent ? <SearchContent content={dataset} /> : null}
+      {showContent ? (
+        <Profiler id="searchContent" onRender={onRenderCallback}>
+          <SearchContent content={dataset} />
+        </Profiler>
+      ) : null}
       <Footer />
     </div>
   );
@@ -99,6 +103,11 @@ function SearchContent({ content }) {
     setSearchData((prevData) => [...prevData, searchItem]);
 
     setLoading(false);
+
+    // Log the search operation
+    console.log(
+      `Search for "${letter}" completed in ${measuredLoadTime} milliseconds`
+    );
 
     return measuredLoadTime;
   };
@@ -274,4 +283,15 @@ root.render(
   </React.StrictMode>
 );
 
+function onRenderCallback(
+  id, // Profiler ID
+  phase, // "mount" (when the component is mounted) or "update" (when it re-renders)
+  actualDuration, // Time spent rendering the committed update
+  baseDuration, // Estimated time to render the entire subtree without memoization
+  startTime, // When React began rendering this update
+  commitTime, // When React committed this update
+  interactions // Set of "interactions" that were being traced when this update was scheduled
+) {
+  // Your performance measurement logic goes here
+}
 reportWebVitals();
