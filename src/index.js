@@ -3,7 +3,75 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import dataset from "./dataSet.json";
-import seedrandom from "seedrandom";
+
+// Function to generate random letters
+function generateRandomLetters() {
+  const alphabet = "abcdefghijklmnopqrstuvwxyz";
+  let result = "";
+  for (let i = 0; i < 5; i++) {
+    result += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+  }
+  return result;
+}
+
+function useSearchTiming(letter, isMeasureClicked, searchResult) {
+  useEffect(() => {
+    console.log(
+      "useSearchTiming hook triggered",
+      letter,
+      isMeasureClicked,
+      searchResult
+    );
+
+    let startTime;
+    if (isMeasureClicked && searchResult.length > 0) {
+      startTime = performance.now();
+    }
+
+    return () => {
+      if (startTime) {
+        const endTime = performance.now();
+        const measuredLoadTime = endTime - startTime;
+
+        // Log the search operation
+        console.log(
+          `Search for "${letter}" completed in ${measuredLoadTime} milliseconds`
+        );
+      }
+    };
+  }, [letter, isMeasureClicked, searchResult]);
+}
+
+function useSearch() {
+  const [loading, setLoading] = useState(false);
+  const [searchResult, setSearchResult] = useState([]);
+  const [startTime, setStartTime] = useState(0); // New state to store start time
+
+  const handleSearch = (content, searchTerm) => {
+    setLoading(true);
+    setStartTime(performance.now()); // Set start time when search starts
+
+    const filteredContent = content.filter((data) =>
+      data.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const slicedContent = filteredContent.slice(0, 100); // Slice to first 100 items
+
+    setSearchResult(slicedContent);
+
+    setLoading(false);
+
+    const endTime = performance.now();
+    const measuredLoadTime = endTime - startTime; // Calculate time taken
+    console.log(
+      `Search for "${searchTerm}" completed in ${measuredLoadTime} milliseconds`
+    ); // Log time taken
+
+    return measuredLoadTime;
+  };
+
+  return { handleSearch, loading, searchResult };
+}
 
 function App() {
   const [showContent, setShowContent] = useState(false);
@@ -11,6 +79,15 @@ function App() {
   const toggleContent = () => {
     setShowContent((prevShowContent) => !prevShowContent);
   };
+
+  const handleMeasureClick = () => {
+    for (let i = 0; i < 1000; i++) {
+      const searchTerm = generateRandomLetters();
+      handleSingleSearch(searchTerm);
+    }
+  };
+
+  const { handleSearch: handleSingleSearch } = useSearch();
 
   return (
     <div className="container">
@@ -26,6 +103,7 @@ function App() {
         </Profiler>
       ) : null}
       <Footer />
+      <button onClick={handleMeasureClick}>Measure 1000 Searches</button>
     </div>
   );
 }
@@ -61,116 +139,21 @@ function Button({ onClick, buttonText }) {
   );
 }
 
-function dispatchAllRenderCompleteEvent() {
-  const allRenderCompleteEvent = new Event("allRenderComplete");
-  document.dispatchEvent(allRenderCompleteEvent);
-}
-
-// The search and performance handler
 function SearchContent({ content }) {
-  const [searchResult, setSearchResult] = useState([]);
-  const [totalLoadTime, setTotalLoadTime] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchData, setSearchData] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [isMeasureClicked, setIsMeasureClicked] = useState(false);
-  const [seed, setSeed] = useState(""); // Initialize seed as empty string
+  const { handleSearch, loading, searchResult } = useSearch();
 
-  useEffect(() => {
-    // Generate a seed when the component mounts
-    setSeed(new Date().getTime().toString());
-  }, []);
-
-  useEffect(() => {
-    dispatchAllRenderCompleteEvent();
-  }, []);
-
-  const handleSearch = (letter) => {
-    const startTime = performance.now();
-
-    setLoading(true);
-
-    const filteredContent = content.filter((data) =>
-      data.description.toLowerCase().includes(letter.toLowerCase())
-    );
-
-    const endTime = performance.now();
-    const measuredLoadTime = endTime - startTime;
-
-    setSearchResult(filteredContent);
-
-    const searchItem = { searchTerm: letter, loadTime: measuredLoadTime };
-    setSearchData((prevData) => [...prevData, searchItem]);
-
-    setLoading(false);
-
-    // Log the search operation
-    console.log(
-      `Search for "${letter}" completed in ${measuredLoadTime} milliseconds`
-    );
-
-    return measuredLoadTime;
-  };
-
-  const runSearches = () => {
-    setLoading(true);
-    setIsMeasureClicked(true);
-
-    let totalLoadTime = 0;
-
-    // Use the same seed for all searches within a run
-    const rng = seedrandom(seed);
-
-    for (let i = 0; i < 1000; i++) {
-      const searchTerm = generateRandomSearchTerm(rng);
-      totalLoadTime += handleSearch(searchTerm);
-    }
-
-    setTotalLoadTime(totalLoadTime);
-    setLoading(false);
-  };
-
-  const generateRandomSearchTerm = (rng) => {
-    const alphabet = "abcdefghijklmnopqrstuvwxyz";
-    let searchTerm = "";
-
-    for (let i = 0; i < 5; i++) {
-      const randomLetterIndex = Math.floor(rng() * alphabet.length);
-      const randomLetter = alphabet[randomLetterIndex];
-      searchTerm += randomLetter;
-    }
-
-    return searchTerm;
-  };
+  useSearchTiming(searchTerm, isMeasureClicked, searchResult);
 
   const handleSearchButtonClick = () => {
-    runSearches();
+    handleSearch(content, searchTerm);
+    setIsMeasureClicked(true);
   };
 
   const handleSingleSearchClick = () => {
-    handleSearch(searchTerm);
+    handleSearch(content, searchTerm);
   };
-
-  useEffect(() => {
-    const saveData = () => {
-      if (isMeasureClicked && searchData.length > 0) {
-        const blob = new Blob([JSON.stringify(searchData, null, 2)], {
-          type: "application/json",
-        });
-
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "search_results.json";
-        document.body.appendChild(link);
-        link.click();
-        URL.revokeObjectURL(url);
-        document.body.removeChild(link);
-      }
-    };
-
-    saveData();
-  }, [searchData, isMeasureClicked]);
 
   return (
     <div className="searchContent">
@@ -193,12 +176,6 @@ function SearchContent({ content }) {
           <p>No data matching the search term!</p>
         )}
       </div>
-      {totalLoadTime > 0 && (
-        <p>
-          Total Load time for 1000 searches: {totalLoadTime.toFixed(2)}{" "}
-          milliseconds
-        </p>
-      )}
     </div>
   );
 }
