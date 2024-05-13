@@ -103,7 +103,6 @@ function App() {
         </Profiler>
       ) : null}
       <Footer />
-      <button onClick={handleMeasureClick}>Measure 1000 Searches</button>
     </div>
   );
 }
