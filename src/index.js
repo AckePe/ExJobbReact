@@ -188,6 +188,7 @@ function NavBar({
   return (
     <nav className="navbar">
       <input
+        className="search-field"
         type="text"
         placeholder="Search..."
         value={searchTerm}
