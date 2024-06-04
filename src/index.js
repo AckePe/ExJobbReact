@@ -28,7 +28,7 @@ function useSearch() {
         data.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
-      const slicedContent = filteredContent.slice(0, 100);
+      const slicedContent = filteredContent.slice(0, 500);
       setSearchResult(slicedContent);
       setLoading(false);
 
